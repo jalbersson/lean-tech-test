@@ -29,24 +29,6 @@ public class EmployeeController {
     IPositionRepository positionRepository;
 
     /**
-     * Creates an Employee including a Position and Person records on database
-     * @param employee
-     * @return
-     */
-    @PostMapping("/createEmployeeFromScratch")
-    public ResponseEntity<Object> createEmployeeFromScratch(@RequestBody Employee employee){
-        try {
-            String validationResult = validateRequestFieldsForCreation(employee);
-            if(validationResult.equals("Correct")) {
-                return new ResponseEntity<>(employeeRepository.save(employee), HttpStatus.CREATED);
-            } else
-                throw new IllegalArgumentException(validationResult);
-        } catch (Exception exception){
-            return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    /**
      * Creates an Employee record verifying firstly if the Position and Person objects exists in the database
      * @param employee
      * @return
@@ -204,35 +186,6 @@ public class EmployeeController {
         } catch (Exception exception){
             return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    /**
-     * Used in the creation of an Employee record to verify that the employee object is correct
-     * @param employee
-     * @return
-     */
-    private String validateRequestFieldsForCreation(Employee employee){
-        String result = "Correct";
-        if(employee == null)
-            result = "null employee parameter";
-        else {
-            if(employee.getPerson() == null)
-                result = "null person object";
-            else {
-                if (employee.getPerson().getName() == null || employee.getPerson().getName().isEmpty())
-                    result = "null or invalid person name";
-                else {
-                    if(employee.getPosition() == null || employee.getPosition().getName().isEmpty()){
-                        result = "null or empty position";
-                    } else {
-                        if(employee.getSalary() == null || employee.getSalary() <= 0)
-                            result = "null or invalid salary";
-                    }
-                }
-            }
-        }
-
-        return result;
     }
 
     /**

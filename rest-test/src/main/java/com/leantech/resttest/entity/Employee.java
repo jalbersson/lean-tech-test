@@ -12,14 +12,14 @@ public class Employee {
     private Long id;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.DETACH,
+            orphanRemoval = false
     )
     private Person person;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.DETACH,
+            orphanRemoval = false
     )
     private Position position;
 
