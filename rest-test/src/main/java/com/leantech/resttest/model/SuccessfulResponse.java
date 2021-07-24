@@ -2,6 +2,9 @@ package com.leantech.resttest.model;
 
 import java.io.Serializable;
 
+/**
+ * A simple template for the response of successful operations
+ */
 public class SuccessfulResponse implements Serializable {
     private String message;
 

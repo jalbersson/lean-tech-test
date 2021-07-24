@@ -8,6 +8,17 @@ import java.util.List;
 
 @Repository
 public interface IEmployeeRepository extends JpaRepository<Employee, Long> {
+    /**
+     * Finds all the Employee records on database containing the Person name
+     * @param name
+     * @return
+     */
     List<Employee> findEmployeeByPerson_Name(String name);
+
+    /**
+     * Finds all the Employee records on database associated with the Position
+     * @param name
+     * @return
+     */
     List<Employee> findEmployeeByPosition_Name(String name);
 }

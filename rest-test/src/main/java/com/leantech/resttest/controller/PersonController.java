@@ -17,6 +17,11 @@ public class PersonController {
     @Autowired
     IPersonRepository personRepository;
 
+    /**
+     * Creates a Person record on database if the person object received is valid
+     * @param person: an object containing the fields to be created (id is not necessary)
+     * @return
+     */
     @PostMapping("/createPerson")
     public ResponseEntity<Object> createPerson(@RequestBody Person person){
         try {
@@ -30,6 +35,11 @@ public class PersonController {
         }
     }
 
+    /**
+     * Modifies an existing Person record according to the person object received
+     * @param person
+     * @return
+     */
     @PutMapping("/modifyPerson")
     public ResponseEntity<Object> modifyPerson(@RequestBody Person person){
         try {
@@ -37,12 +47,15 @@ public class PersonController {
             if(validationResult.equals("person already exists on database")) {
                 Optional<Person> personOnDatabase = personRepository.findById(person.getId());
                 if(personOnDatabase.isPresent()) {
+                    // set the new values for the columns
                     Person personToSave = personOnDatabase.get();
                     personToSave.setName(person.getName());
                     personToSave.setLastName(person.getLastName());
                     personToSave.setAddress(person.getAddress());
                     personToSave.setCityName(person.getCityName());
                     personToSave.setCellphone(person.getCellphone());
+
+                    // save the modified object in the database
                     personRepository.save(personToSave);
                     return new ResponseEntity<>(new SuccessfulResponse("Person record successfully modified"), HttpStatus.OK);
                 } else
@@ -54,6 +67,11 @@ public class PersonController {
         }
     }
 
+    /**
+     * Deletes a Person record on database if the person is found
+     * @param person
+     * @return
+     */
     @DeleteMapping("/deletePerson")
     public ResponseEntity<Object> deletePerson(@RequestBody Person person){
         try {
@@ -73,6 +91,11 @@ public class PersonController {
         }
     }
 
+    /**
+     * Returns a Person record if the id is found in database
+     * @param idRequest
+     * @return
+     */
     @GetMapping("/findPersonById")
     public ResponseEntity<Object> findPersonById(@RequestBody IdRequest idRequest){
         try {
@@ -90,6 +113,10 @@ public class PersonController {
         }
     }
 
+    /**
+     * Finds all records of Person in database
+     * @return
+     */
     @GetMapping("/findAllPeople")
     public ResponseEntity<Object> findAllPeople(){
         try{
@@ -99,6 +126,12 @@ public class PersonController {
         }
     }
 
+    /**
+     * Validates if the received person object is correct to be saved in database
+     * @param person
+     * @param validateIdentifier: used only for update or delete operations
+     * @return
+     */
     private String validateRequestFields(Person person, boolean validateIdentifier){
         String result = "Correct";
         if(person == null)

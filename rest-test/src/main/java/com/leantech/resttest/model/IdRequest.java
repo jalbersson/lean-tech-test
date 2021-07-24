@@ -1,5 +1,8 @@
 package com.leantech.resttest.model;
 
+/**
+ * This is a simple model used as a request when trying to find a record by its ID
+ */
 public class IdRequest {
     private Long id;
 

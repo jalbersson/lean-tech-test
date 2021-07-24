@@ -2,6 +2,9 @@ package com.leantech.resttest.model;
 
 import java.io.Serializable;
 
+/**
+ * This class is a model used as a response when an error occurs during the process of a Request
+ */
 public class ErrorResponse implements Serializable {
     private String errorMessage;
 

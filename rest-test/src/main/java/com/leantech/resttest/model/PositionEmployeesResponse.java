@@ -1,10 +1,12 @@
 package com.leantech.resttest.model;
 
 import com.leantech.resttest.entity.Employee;
-
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * This class is used to create a custom response asked in one of the points of the exercise
+ */
 public class PositionEmployeesResponse implements Serializable {
     private Long id;
     private String name;

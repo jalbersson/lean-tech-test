@@ -18,6 +18,11 @@ public class PositionController {
     @Autowired
     IPositionRepository positionRepository;
 
+    /**
+     * Creates a Position record in the database. Only the name of the position is needed and validated
+     * @param positionRequest
+     * @return
+     */
     @PostMapping("/createPosition")
     public ResponseEntity<Object> createPosition(@RequestBody PositionRequest positionRequest){
         try {
@@ -32,6 +37,11 @@ public class PositionController {
         }
     }
 
+    /**
+     * Modifies an existing Position record in database
+     * @param position
+     * @return
+     */
     @PutMapping("/modifyPosition")
     public ResponseEntity<Object> modifyPosition(@RequestBody Position position){
         try {
@@ -52,6 +62,11 @@ public class PositionController {
         }
     }
 
+    /**
+     * Deletes an existing Position record in database if Id is found
+     * @param position
+     * @return
+     */
     @DeleteMapping("/deletePosition")
     public ResponseEntity<Object> deletePosition(@RequestBody Position position){
         try {
@@ -71,6 +86,11 @@ public class PositionController {
         }
     }
 
+    /**
+     * Finds a Position record by its ID
+     * @param idRequest
+     * @return
+     */
     @GetMapping("/findPositionById")
     public ResponseEntity<Object> findPositionById(@RequestBody IdRequest idRequest){
         try {
@@ -88,6 +108,10 @@ public class PositionController {
         }
     }
 
+    /**
+     * Returns all existing Position records
+     * @return
+     */
     @GetMapping("/findAllPositions")
     public ResponseEntity<Object> findAllPositions(){
         try{
@@ -97,6 +121,12 @@ public class PositionController {
         }
     }
 
+    /**
+     * Validates if the fields on position object are correct
+     * @param position
+     * @param validateIdentifier: used only for update or delete operations
+     * @return
+     */
     private String validateRequestFields(Position position, boolean validateIdentifier){
         String result = "Correct";
         if(position == null)

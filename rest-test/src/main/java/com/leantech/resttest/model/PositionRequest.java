@@ -1,9 +1,10 @@
 package com.leantech.resttest.model;
 
-import com.leantech.resttest.entity.Position;
-
 import java.io.Serializable;
 
+/**
+ * Used when creating a new Position record in database
+ */
 public class PositionRequest implements Serializable {
     private String positionName;
 

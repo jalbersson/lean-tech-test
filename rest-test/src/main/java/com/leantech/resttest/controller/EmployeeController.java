@@ -1,7 +1,6 @@
 package com.leantech.resttest.controller;
 
 import com.leantech.resttest.entity.Employee;
-import com.leantech.resttest.entity.Person;
 import com.leantech.resttest.entity.Position;
 import com.leantech.resttest.model.ErrorResponse;
 import com.leantech.resttest.model.IdRequest;
@@ -47,6 +46,11 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Creates an Employee record verifying firstly if the Position and Person objects exists in the database
+     * @param employee
+     * @return
+     */
     @PostMapping("/createEmployeeFromExisting")
     public ResponseEntity<Object> createEmployeeFromExisting(@RequestBody Employee employee){
         try {
@@ -62,6 +66,11 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Modifies an existing Employee record in database. Only the salary and position can be modified
+     * @param employee
+     * @return
+     */
     @PutMapping("/modifyEmployee")
     public ResponseEntity<Object> modifyEmployee(@RequestBody Employee employee){
         try {
@@ -87,6 +96,11 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Deletes an existing Employee record in database
+     * @param employee
+     * @return
+     */
     @DeleteMapping("/deleteEmployee")
     public ResponseEntity<Object> deleteEmployee(@RequestBody Employee employee){
         try {
@@ -106,6 +120,11 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Finds an Employee record by its ID
+     * @param idRequest
+     * @return
+     */
     @GetMapping("/findEmployeeById")
     public ResponseEntity<Object> findEmployeeById(@RequestBody IdRequest idRequest){
         try {
@@ -123,6 +142,13 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Returns al the existing Employee record in database
+     * @param positionName: If present will return only the Employees associated with the position
+     * @param employeeName: If present will return only the Employees containing the employeeName in
+     *                    associated Person record
+     * @return
+     */
     @GetMapping("/findAllEmployee")
     public ResponseEntity<Object> findAllEmployee(@RequestParam("positionName") Optional<String> positionName,
                                                   @RequestParam("employeeName") Optional<String> employeeName){
@@ -156,6 +182,11 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Returns a custom response containing every Position with all the Employees associated with
+     * that Position
+     * @return
+     */
     @GetMapping("/findAllEmployeesByPosition")
     public ResponseEntity<Object> findAllEmployeesByPosition(){
         try {
@@ -175,6 +206,11 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Used in the creation of an Employee record to verify that the employee object is correct
+     * @param employee
+     * @return
+     */
     private String validateRequestFieldsForCreation(Employee employee){
         String result = "Correct";
         if(employee == null)
@@ -199,6 +235,12 @@ public class EmployeeController {
         return result;
     }
 
+    /**
+     * Used in the creation of an Employee record to verify that the received employee
+     * object is correct including the existence of the Position and Person in database
+     * @param employee
+     * @return
+     */
     private String validateRequestFieldsForExistingCreation(Employee employee){
         String result = "Correct";
         if(employee == null)
@@ -223,6 +265,12 @@ public class EmployeeController {
         return result;
     }
 
+    /**
+     * Used in other operations like update or delete to verify that the employee object
+     * is correct
+     * @param employee
+     * @return
+     */
     private String validateRequestFieldsForOtherOps(Employee employee){
         String result = "Correct";
         if(employee == null)
