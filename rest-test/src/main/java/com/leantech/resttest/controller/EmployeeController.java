@@ -9,6 +9,7 @@ import com.leantech.resttest.model.SuccessfulResponse;
 import com.leantech.resttest.repository.IEmployeeRepository;
 import com.leantech.resttest.repository.IPersonRepository;
 import com.leantech.resttest.repository.IPositionRepository;
+import com.leantech.resttest.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,15 @@ import java.util.Optional;
 public class EmployeeController {
     @Autowired
     private IEmployeeRepository employeeRepository;
+
     @Autowired
     IPersonRepository personRepository;
 
     @Autowired
     IPositionRepository positionRepository;
+
+    @Autowired
+    ValidationService validationService;
 
     /**
      * Creates an Employee record verifying firstly if the Position and Person objects exists in the database
@@ -36,7 +41,7 @@ public class EmployeeController {
     @PostMapping("/createEmployeeFromExisting")
     public ResponseEntity<Object> createEmployeeFromExisting(@RequestBody Employee employee){
         try {
-            String validationResult = validateRequestFieldsForExistingCreation(employee);
+            String validationResult = validationService.validateEmployeeRequestFieldsForExistingCreation(employee);
             if(validationResult.equals("Correct")) {
                 employee.setPerson(personRepository.findById(employee.getPerson().getId()).get());
                 employee.setPosition(positionRepository.findById(employee.getPosition().getId()).get());
@@ -56,7 +61,7 @@ public class EmployeeController {
     @PutMapping("/modifyEmployee")
     public ResponseEntity<Object> modifyEmployee(@RequestBody Employee employee){
         try {
-            String validationResult = validateRequestFieldsForOtherOps(employee);
+            String validationResult = validationService.validateEmployeeRequestFieldsForOtherOps(employee);
             if(validationResult.equals("Correct")) {
                 Optional<Employee> employeeOnDatabase = employeeRepository.findById(employee.getId());
                 if(employeeOnDatabase.isPresent()) {
@@ -86,7 +91,7 @@ public class EmployeeController {
     @DeleteMapping("/deleteEmployee")
     public ResponseEntity<Object> deleteEmployee(@RequestBody Employee employee){
         try {
-            String validationResult = validateRequestFieldsForOtherOps(employee);
+            String validationResult = validationService.validateEmployeeRequestFieldsForOtherOps(employee);
             if(validationResult.equals("Correct")) {
                 Optional<Employee> employeeOnDatabase = employeeRepository.findById(employee.getId());
                 if(employeeOnDatabase.isPresent()) {
@@ -186,57 +191,5 @@ public class EmployeeController {
         } catch (Exception exception){
             return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    /**
-     * Used in the creation of an Employee record to verify that the received employee
-     * object is correct including the existence of the Position and Person in database
-     * @param employee
-     * @return
-     */
-    private String validateRequestFieldsForExistingCreation(Employee employee){
-        String result = "Correct";
-        if(employee == null)
-            result = "null employee parameter";
-        else {
-            if(employee.getPerson() == null)
-                result = "null person object";
-            else {
-                if (employee.getPerson().getId() == null || employee.getPerson().getId() <= 0)
-                    result = "null or invalid person id";
-                else {
-                    if(employee.getPosition() == null || employee.getPosition().getId() <= 0){
-                        result = "null, invalid or empty position";
-                    } else {
-                        if(employee.getSalary() == null || employee.getSalary() <= 0)
-                            result = "null or invalid salary";
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Used in other operations like update or delete to verify that the employee object
-     * is correct
-     * @param employee
-     * @return
-     */
-    private String validateRequestFieldsForOtherOps(Employee employee){
-        String result = "Correct";
-        if(employee == null)
-            result = "null employee parameter";
-        else {
-            if(employee.getId() == null)
-                result = "null identifier";
-            else {
-                if(!employeeRepository.findById(employee.getId()).isPresent())
-                    result = "employee not found";
-            }
-        }
-
-        return result;
     }
 }

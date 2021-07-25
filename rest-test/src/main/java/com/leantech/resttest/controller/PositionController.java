@@ -6,6 +6,7 @@ import com.leantech.resttest.model.IdRequest;
 import com.leantech.resttest.model.PositionRequest;
 import com.leantech.resttest.model.SuccessfulResponse;
 import com.leantech.resttest.repository.IPositionRepository;
+import com.leantech.resttest.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,9 @@ public class PositionController {
     @Autowired
     IPositionRepository positionRepository;
 
+    @Autowired
+    ValidationService validationService;
+
     /**
      * Creates a Position record in the database. Only the name of the position is needed and validated
      * @param positionRequest
@@ -27,7 +31,7 @@ public class PositionController {
     public ResponseEntity<Object> createPosition(@RequestBody PositionRequest positionRequest){
         try {
             Position positionToVerify = new Position(positionRequest.getPositionName());
-            String validationResult = validateRequestFields(positionToVerify, false);
+            String validationResult = validationService.validatePositionRequestFields(positionToVerify, false);
             if(validationResult.equals("Correct")) {
                 return new ResponseEntity<>(positionRepository.save(positionToVerify), HttpStatus.CREATED);
             } else
@@ -45,7 +49,7 @@ public class PositionController {
     @PutMapping("/modifyPosition")
     public ResponseEntity<Object> modifyPosition(@RequestBody Position position){
         try {
-            String validationResult = validateRequestFields(position, true);
+            String validationResult = validationService.validatePositionRequestFields(position, true);
             if(position != null && position.getId() != null) {
                 Optional<Position> positionOnDatabase = positionRepository.findById(position.getId());
                 if(positionOnDatabase.isPresent()) {
@@ -70,7 +74,7 @@ public class PositionController {
     @DeleteMapping("/deletePosition")
     public ResponseEntity<Object> deletePosition(@RequestBody Position position){
         try {
-            String validationResult = validateRequestFields(position, true);
+            String validationResult = validationService.validatePositionRequestFields(position, true);
             if(position != null && position.getId() != null) {
                 Optional<Position> positionOnDatabase = positionRepository.findById(position.getId());
                 if(positionOnDatabase.isPresent()) {
@@ -119,32 +123,5 @@ public class PositionController {
         } catch (Exception exception){
             return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.NOT_FOUND);
         }
-    }
-
-    /**
-     * Validates if the fields on position object are correct
-     * @param position
-     * @param validateIdentifier: used only for update or delete operations
-     * @return
-     */
-    private String validateRequestFields(Position position, boolean validateIdentifier){
-        String result = "Correct";
-        if(position == null)
-            result = "null position parameter";
-        else {
-            if(validateIdentifier && position.getId() == null)
-                result = "null identifier";
-            else {
-                if (position.getName() == null || position.getName().isEmpty())
-                    result = "null or invalid position name";
-                else {
-                    if (positionRepository.findByName(position.getName()) != null)
-                        result = "position already exists on database";
-                }
-            }
-        }
-
-
-        return result;
     }
 }

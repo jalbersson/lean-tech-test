@@ -5,6 +5,7 @@ import com.leantech.resttest.model.ErrorResponse;
 import com.leantech.resttest.model.IdRequest;
 import com.leantech.resttest.model.SuccessfulResponse;
 import com.leantech.resttest.repository.IPersonRepository;
+import com.leantech.resttest.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class PersonController {
     @Autowired
     IPersonRepository personRepository;
 
+    @Autowired
+    ValidationService validationService;
+
     /**
      * Creates a Person record on database if the person object received is valid
      * @param person: an object containing the fields to be created (id is not necessary)
@@ -25,7 +29,7 @@ public class PersonController {
     @PostMapping("/createPerson")
     public ResponseEntity<Object> createPerson(@RequestBody Person person){
         try {
-            String validationResult = validateRequestFields(person, false);
+            String validationResult = validationService.validatePersonRequestFields(person, false);
             if(validationResult.equals("Correct")) {
                 return new ResponseEntity<>(personRepository.save(person), HttpStatus.CREATED);
             } else
@@ -43,7 +47,7 @@ public class PersonController {
     @PutMapping("/modifyPerson")
     public ResponseEntity<Object> modifyPerson(@RequestBody Person person){
         try {
-            String validationResult = validateRequestFields(person, true);
+            String validationResult = validationService.validatePersonRequestFields(person, true);
             if(validationResult.equals("person already exists on database")) {
                 Optional<Person> personOnDatabase = personRepository.findById(person.getId());
                 if(personOnDatabase.isPresent()) {
@@ -75,7 +79,7 @@ public class PersonController {
     @DeleteMapping("/deletePerson")
     public ResponseEntity<Object> deletePerson(@RequestBody Person person){
         try {
-            String validationResult = validateRequestFields(person, true);
+            String validationResult = validationService.validatePersonRequestFields(person, true);
             if(validationResult.equals("person already exists on database")) {
                 Optional<Person> personOnDatabase = personRepository.findById(person.getId());
                 if(personOnDatabase.isPresent()) {
@@ -126,30 +130,5 @@ public class PersonController {
         }
     }
 
-    /**
-     * Validates if the received person object is correct to be saved in database
-     * @param person
-     * @param validateIdentifier: used only for update or delete operations
-     * @return
-     */
-    private String validateRequestFields(Person person, boolean validateIdentifier){
-        String result = "Correct";
-        if(person == null)
-            result = "null person parameter";
-        else {
-            if(validateIdentifier && person.getId() == null)
-                result = "null identifier";
-            else {
-                if (person.getName() == null || person.getName().isEmpty())
-                    result = "null or invalid person name";
-                else {
-                    if (person.getId() != null && personRepository.findById(person.getId()) != null)
-                        result = "person already exists on database";
-                }
-            }
-        }
 
-
-        return result;
-    }
 }
